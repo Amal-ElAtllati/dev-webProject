@@ -7,9 +7,10 @@ use App\Models\ResourceCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class ResourceController extends Controller
-{
-    //  Afficher tous les resources 
+class ResourceController extends Controller{
+
+    // afficher tous les ressources
+
     public function index()
     {
         $resources = Resource::with(['category', 'responsable'])->get();
@@ -24,7 +25,8 @@ class ResourceController extends Controller
         return view('resources.create', compact('categories', 'users'));
     }
 
-    //   Stocker neveau resource
+
+    // stocker nouveau ressource
     public function store(Request $request)
     {
         $request->validate([
@@ -43,7 +45,8 @@ class ResourceController extends Controller
                          ->with('success', 'Resource ajoutée avec succès');
     }
 
-    // // Formulaire de modification du ressource
+
+    // forme editer ressource
     public function edit($id)
     {
         $resource = Resource::findOrFail($id);
@@ -53,7 +56,8 @@ class ResourceController extends Controller
         return view('resources.edit', compact('resource', 'categories', 'users'));
     }
 
-    //  Mise à jour de la ressource 
+
+    // mise a jour de ressource
     public function update(Request $request, $id)
     {
         $resource = Resource::findOrFail($id);
@@ -73,7 +77,8 @@ class ResourceController extends Controller
                          ->with('success', 'Resource modifiée avec succès');
     }
 
-    // Supprimer recource 
+
+    // supprimer du ressource
     public function destroy($id)
     {
         $resource = Resource::findOrFail($id);
