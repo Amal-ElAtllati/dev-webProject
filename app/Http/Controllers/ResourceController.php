@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 
 class ResourceController extends Controller
 {
-    // عرض جميع الموارد
+    //  Afficher tous les resources 
     public function index()
     {
         $resources = Resource::with(['category', 'responsable'])->get();
@@ -24,7 +24,7 @@ class ResourceController extends Controller
         return view('resources.create', compact('categories', 'users'));
     }
 
-    // تخزين مورد جديد
+    //   Stocker neveau resource
     public function store(Request $request)
     {
         $request->validate([
@@ -43,7 +43,7 @@ class ResourceController extends Controller
                          ->with('success', 'Resource ajoutée avec succès');
     }
 
-    // فورم تعديل مورد
+    // // Formulaire de modification du ressource
     public function edit($id)
     {
         $resource = Resource::findOrFail($id);
@@ -53,7 +53,7 @@ class ResourceController extends Controller
         return view('resources.edit', compact('resource', 'categories', 'users'));
     }
 
-    // تحديث المورد
+    //  Mise à jour de la ressource 
     public function update(Request $request, $id)
     {
         $resource = Resource::findOrFail($id);
@@ -73,7 +73,7 @@ class ResourceController extends Controller
                          ->with('success', 'Resource modifiée avec succès');
     }
 
-    // حذف مورد
+    // Supprimer recource 
     public function destroy($id)
     {
         $resource = Resource::findOrFail($id);
