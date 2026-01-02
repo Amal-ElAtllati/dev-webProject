@@ -31,13 +31,21 @@ class AuthenticatedSessionController extends Controller
 
         $user = auth()->user();
 
+        $roleMessages = [
+            'admin' => 'Bienvenue, administrateur! Vous êtes connecté avec succès.',
+            'responsable' => 'Bienvenue, responsable technique! Vous êtes connecté avec succès.',
+            'user' => 'Bienvenue! Vous êtes connecté avec succès.'
+        ];
+
+        $message = $roleMessages[$user->role] ?? 'Vous êtes connecté avec succès.';
+
         if ($user->role === 'admin') {
-           return redirect('/admin/dashboard');
+           return redirect('/admin/dashboard')->with('success', $message);
         } elseif ($user->role === 'responsable') {
-           return redirect('/responsable/dashboard');
+           return redirect('/responsable/dashboard')->with('success', $message);
         }
 
-        return redirect('/user/dashboard');
+        return redirect('/user/dashboard')->with('success', $message);
     }
 
     /**
@@ -51,6 +59,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/')->with('success', 'Vous êtes déconnecté avec succès. À bientôt!');
     }
 }

@@ -9,7 +9,7 @@ class ResourceCategory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['libelle'];
+    protected $fillable = ['name'];
 
     public function resources()
     {
