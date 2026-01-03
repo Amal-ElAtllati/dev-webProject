@@ -61,14 +61,6 @@ require __DIR__.'/auth.php';
 
 
 
-use App\Http\Controllers\ReservationController;
-
-Route::middleware(['auth'])->group(function () {
-    Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
-    Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
-    Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
-});
-
 
 
 // Zidi hadchi f l'akhir d web.php
@@ -80,6 +72,18 @@ Route::get('/dashboard', function () {
     }
     return redirect()->route('dashboard.user');
 })->middleware(['auth'])->name('dashboard');
+
+
+
+
+use App\Http\Controllers\ReservationController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('reservations', ReservationController::class);
+    // Routes dyal Responsable Technique
+    Route::post('/reservations/{id}/approve', [ReservationController::class, 'approve'])->name('reservations.approve');
+    Route::post('/reservations/{id}/reject', [ReservationController::class, 'reject'])->name('reservations.reject');
+});
 
 
 
