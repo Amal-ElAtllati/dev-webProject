@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->foreignId('resource_id')->constrained()->onDelete('cascade');
             $table->dateTime('date_debut');
             $table->dateTime('date_fin');
-            $table->string('status')->default('en_attente'); // approuve, refuse
+            $table->string('statut')->default('en_attente'); // approuve, refuse
             $table->timestamps();
         });
     }

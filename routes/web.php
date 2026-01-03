@@ -14,9 +14,6 @@ use App\Http\Controllers\Admin\UserController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 
 // Utilisateur interne
@@ -62,6 +59,27 @@ Route::middleware(['auth', 'active', 'role:admin'])
 
 require __DIR__.'/auth.php';
 
+
+
+use App\Http\Controllers\ReservationController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reservations', [ReservationController::class, 'index'])->name('reservations.index');
+    Route::get('/reservations/create', [ReservationController::class, 'create'])->name('reservations.create');
+    Route::post('/reservations', [ReservationController::class, 'store'])->name('reservations.store');
+});
+
+
+
+// Zidi hadchi f l'akhir d web.php
+Route::get('/dashboard', function () {
+    if (auth()->user()->role === 'admin') {
+        return redirect()->route('dashboard.admin');
+    } elseif (auth()->user()->role === 'responsable') {
+        return redirect()->route('dashboard.responsable');
+    }
+    return redirect()->route('dashboard.user');
+})->middleware(['auth'])->name('dashboard');
 
 
 

@@ -1,49 +1,34 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('Mes Réservations') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-<h1 style="text-align:center;">Mes réservations</h1>
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                
+                <table class="min-w-full">
+                    <thead>
+                        <tr>
+                            <th>Ressource</th>
+                            <th>Date Début</th>
+                            <th>Date Fin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($reservations as $res)
+                            <tr>
+                                <td>{{ $res->resource->nom }}</td>
+                                <td>{{ $res->date_debut }}</td>
+                                <td>{{ $res->date_fin }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
-@if(session('success'))
-    <div style="background:#d4edda;color:#155724;padding:10px;margin-bottom:10px;border-radius:5px;">
-        {{ session('success') }}
+            </div>
+        </div>
     </div>
-@endif
-
-<table style="width:100%;border-collapse:collapse;margin-top:20px;">
-    <thead>
-        <tr style="background:#007bff;color:white;">
-            <th style="padding:10px;border:1px solid #ddd;">Ressource</th>
-            <th style="padding:10px;border:1px solid #ddd;">Date début</th>
-            <th style="padding:10px;border:1px solid #ddd;">Date fin</th>
-            <th style="padding:10px;border:1px solid #ddd;">Statut</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($reservations as $res)
-            <tr style="border-bottom:1px solid #ddd;">
-                <td style="padding:10px;">{{ $res->resource->nom }}</td>
-                <td style="padding:10px;">{{ $res->date_debut }}</td>
-                <td style="padding:10px;">{{ $res->date_fin }}</td>
-                <td style="padding:10px;">
-                    @if($res->statut == 'En attente')
-                        <span style="color:orange;">{{ $res->statut }}</span>
-                    @elseif($res->statut == 'Approuvée')
-                        <span style="color:green;">{{ $res->statut }}</span>
-                    @elseif($res->statut == 'Refusée')
-                        <span style="color:red;">{{ $res->statut }}</span>
-                    @else
-                        {{ $res->statut }}
-                    @endif
-                </td>
-            </tr>
-        @endforeach
-    </tbody>
-</table>
-
-<div style="margin-top:20px;">
-    <a href="{{ route('reservations.create') }}" 
-       style="background:#28a745;color:white;padding:10px 20px;text-decoration:none;border-radius:5px;">
-       Nouvelle réservation
-    </a>
-</div>
-@endsection
+</x-app-layout>

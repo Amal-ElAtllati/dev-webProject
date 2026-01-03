@@ -34,3 +34,4 @@ class Resource extends Model
         return $this->hasMany(Maintenance::class);
     }
 }
+   
