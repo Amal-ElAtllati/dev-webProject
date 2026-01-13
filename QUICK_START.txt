@@ -1,0 +1,50 @@
+═══════════════════════════════════════════════════════════════
+  QUICK START - Copy and Paste These Commands
+═══════════════════════════════════════════════════════════════
+
+1. Clone the project:
+   git clone <repository-url>
+   cd dev-webProject
+
+2. Install dependencies:
+   composer install
+   npm install
+
+3. Setup environment:
+   copy .env.example .env
+   php artisan key:generate
+
+4. Create MySQL database:
+   mysql -u root -p
+   CREATE DATABASE laravel_reservation;
+   EXIT;
+
+5. Configure .env file:
+   Set DB_CONNECTION=mysql
+   Set DB_DATABASE=laravel_reservation
+   Set DB_USERNAME=root
+   Set DB_PASSWORD=your_mysql_password
+
+6. Run migrations and seed:
+   php artisan migrate
+   php artisan db:seed
+
+7. Build assets:
+   npm run build
+
+8. Start server:
+   php artisan serve
+
+7. Open browser:
+   http://127.0.0.1:8000
+
+═══════════════════════════════════════════════════════════════
+  TEST LOGIN CREDENTIALS
+═══════════════════════════════════════════════════════════════
+
+Admin:        admin@example.com        / password
+Responsable:  responsable@example.com   / password
+User:          user@example.com        / password
+
+═══════════════════════════════════════════════════════════════
+
