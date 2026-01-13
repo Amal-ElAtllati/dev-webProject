@@ -155,7 +155,7 @@ class ReservationController extends Controller
             'statut' => 'required|in:approuve,refuse',
         ]);
 
-        $oldStatus = $reservation->status;
+        $oldStatus = $reservation->statut;
         $reservation->update([
             'statut' => $request->statut === 'approuve' ? 'approuve' : 'refuse',
         ]);

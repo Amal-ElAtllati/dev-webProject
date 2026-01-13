@@ -44,9 +44,9 @@ class StatisticsController extends Controller
             'total_resources' => Resource::count(),
             'available_resources' => Resource::where('etat', 'disponible')->count(),
             'total_reservations' => Reservation::count(),
-            'pending_reservations' => Reservation::where('status', 'en_attente')->count(),
-            'approved_reservations' => Reservation::where('status', 'approuve')->count(),
-            'rejected_reservations' => Reservation::where('status', 'refuse')->count(),
+            'pending_reservations' => Reservation::where('statut', 'en_attente')->count(),
+            'approved_reservations' => Reservation::where('statut', 'approuve')->count(),
+            'rejected_reservations' => Reservation::where('statut', 'refuse')->count(),
             'reservations_this_month' => Reservation::whereMonth('created_at', now()->month)
                 ->whereYear('created_at', now()->year)->count(),
             'reservations_this_week' => Reservation::whereBetween('created_at', [
@@ -57,6 +57,8 @@ class StatisticsController extends Controller
             'reservations_by_month' => $this->getReservationsByMonth(),
             'resources_by_category' => $this->getResourcesByCategory(),
             'reservations_by_status' => $this->getReservationsByStatus(),
+            'resource_states_data' => $this->getResourceStatesData(),
+            'reservation_status_data' => $this->getReservationStatusData(),
         ];
     }
 
@@ -88,6 +90,8 @@ class StatisticsController extends Controller
                 ])->count(),
             'reservations_by_month' => $this->getReservationsByMonth($resources),
             'resources_by_category' => $this->getResourcesByCategory($userId),
+            'resource_states_data' => $this->getResourceStatesData($userId),
+            'reservation_status_data' => $this->getReservationStatusData($resources),
         ];
     }
 
@@ -117,6 +121,7 @@ class StatisticsController extends Controller
                 ->limit(5)
                 ->get(),
             'reservations_by_month' => $this->getReservationsByMonth(null, $userId),
+            'reservation_status_data' => $this->getReservationStatusData(null, $userId),
         ];
     }
 
@@ -171,10 +176,10 @@ class StatisticsController extends Controller
     private function getReservationsByStatus()
     {
         return Reservation::select(
-            'status',
+            'statut',
             DB::raw('COUNT(*) as count')
         )
-            ->groupBy('status')
+            ->groupBy('statut')
             ->get();
     }
 
@@ -195,5 +200,83 @@ class StatisticsController extends Controller
             ->orderBy('reservation_count', 'desc')
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Get resource states data for pie chart.
+     */
+    private function getResourceStatesData($responsableId = null)
+    {
+        $query = Resource::select('etat', DB::raw('COUNT(*) as count'))
+            ->groupBy('etat');
+
+        if ($responsableId !== null) {
+            $query->where('responsable_id', $responsableId);
+        }
+
+        $data = $query->get();
+
+        $labels = [];
+        $values = [];
+        $colors = [];
+
+        $stateMap = [
+            'disponible' => ['label' => 'Disponible', 'color' => '#10b981'],
+            'maintenance' => ['label' => 'Maintenance', 'color' => '#f59e0b'],
+            'desactive' => ['label' => 'Désactivé', 'color' => '#ef4444'],
+        ];
+
+        foreach ($data as $item) {
+            $labels[] = $stateMap[$item->etat]['label'] ?? ucfirst($item->etat);
+            $values[] = $item->count;
+            $colors[] = $stateMap[$item->etat]['color'] ?? '#6b7280';
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $values,
+            'colors' => $colors,
+        ];
+    }
+
+    /**
+     * Get reservation status data for pie chart.
+     */
+    private function getReservationStatusData($resourceIds = null, $userId = null)
+    {
+        $query = Reservation::select('statut', DB::raw('COUNT(*) as count'))
+            ->groupBy('statut');
+
+        if ($resourceIds !== null) {
+            $query->whereIn('resource_id', $resourceIds);
+        }
+
+        if ($userId !== null) {
+            $query->where('user_id', $userId);
+        }
+
+        $data = $query->get();
+
+        $labels = [];
+        $values = [];
+        $colors = [];
+
+        $statusMap = [
+            'en_attente' => ['label' => 'En attente', 'color' => '#f59e0b'],
+            'approuve' => ['label' => 'Approuvées', 'color' => '#10b981'],
+            'refuse' => ['label' => 'Rejetées', 'color' => '#ef4444'],
+        ];
+
+        foreach ($data as $item) {
+            $labels[] = $statusMap[$item->statut]['label'] ?? ucfirst($item->statut);
+            $values[] = $item->count;
+            $colors[] = $statusMap[$item->statut]['color'] ?? '#6b7280';
+        }
+
+        return [
+            'labels' => $labels,
+            'data' => $values,
+            'colors' => $colors,
+        ];
     }
 }
