@@ -9,8 +9,28 @@ class Incident extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'resource_id', 'description', 'date_signalement', 'statut'];
+    protected $fillable = [
+        'user_id',
+        'resource_id',
+        'reservation_id',
+        'type',
+        'priorite',
+        'titre',
+        'description',
+        'fichiers',
+        'statut',
+        'reponse_admin',
+        'date_signalement',
+        'date_resolution'
+    ];
 
+    protected $casts = [
+        'fichiers' => 'array',
+        'date_signalement' => 'datetime',
+        'date_resolution' => 'datetime'
+    ];
+
+    // Relations
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -19,5 +39,10 @@ class Incident extends Model
     public function resource()
     {
         return $this->belongsTo(Resource::class);
+    }
+
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class);
     }
 }

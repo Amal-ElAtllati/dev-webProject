@@ -172,7 +172,7 @@
 
     <!-- Auth -->
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
-        @auth
+         @auth
             <div class="text-center space-y-4">
                 <p class="text-gray-700 dark:text-gray-300 text-lg">
                     Bienvenue,
@@ -186,17 +186,17 @@
                           rounded-lg text-white font-medium
                           bg-gradient-to-r from-purple-600 to-pink-600
                           hover:scale-105 transition shadow-lg">
-                    Accéder au Dashboard
+                   Accéder au Dashboard
                 </a>
             </div>
-        @else
+         @else
             <div class="space-y-4">
                 <a href="{{ route('login') }}"
                    class="inline-flex items-center justify-center w-full px-6 py-3
                           rounded-lg text-white font-medium
                           bg-gradient-to-r from-purple-600 to-pink-600
                           hover:scale-105 transition shadow-lg">
-                    🔑 Se connecter
+                🔑 Se connecter
                 </a>
 
                 <a href="{{ route('register') }}"
@@ -204,10 +204,10 @@
                           rounded-lg border-2 border-purple-600
                           text-purple-600 font-medium
                           hover:bg-purple-50 transition">
-                    ✨ S'inscrire
+                Demande d'ouverture de compte
                 </a>
             </div>
-        @endauth
+         @endauth
     </div>
 
 </div>

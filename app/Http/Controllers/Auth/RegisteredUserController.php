@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Notification; // <-- Ajouter cette ligne
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -34,6 +35,7 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'request_message' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $user = User::create([
@@ -42,19 +44,24 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'user',
             'active' => true,
+            'status' => 'pending', // Invité
+            'request_message' => $request->request_message,
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        if ($user->role === 'admin') {
-            return redirect('/admin/dashboard');
-        } elseif ($user->role === 'responsable') {
-            return redirect('/responsable/dashboard');
+        // Notification pour tous les admins
+        $admins = User::where('role', 'admin')->get();
+        foreach ($admins as $admin) {
+            Notification::create([
+                'user_id' => $admin->id,
+                'type' => 'new_registration', // Optionnel si tu veux filtrer par type
+                'message' => "Nouvelle demande d'inscription de {$user->name}",
+                'lu' => false,
+            ]);
         }
 
-        return redirect('/user/dashboard');
-    }
+        return redirect('/')
+            ->with('success', '✅ Votre demande a été envoyée avec succès ! Un administrateur l\'examinera bientôt.');
+    }  
 }
-

@@ -48,5 +48,12 @@
                 {{ __('Register') }}
             </x-primary-button>
         </div>
+        <!-- Message (optionnel) -->
+         <div>
+            <label for="request_message">Message pour l'admin (optionnel)</label>
+            <textarea id="request_message" name="request_message" rows="3" 
+              placeholder="Expliquez pourquoi vous souhaitez rejoindre...">
+            </textarea>
+         </div>
     </form>
 </x-guest-layout>
