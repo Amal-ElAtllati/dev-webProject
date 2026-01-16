@@ -7,10 +7,14 @@
             
             @if(Auth::user()->role === 'responsable' || Auth::user()->role === 'admin')
                 <button 
+                    type="button"
                     onclick="openAddResourceModal()"
-                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105">
-                    <span>➕</span>
-                    <span>Ajouter une ressource</span>
+                    class="text-white font-bold py-2 px-4 rounded-lg transition duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    style="background-color: #22c55e !important; color: #ffffff !important;"
+                    onmouseover="this.style.backgroundColor='#16a34a'"
+                    onmouseout="this.style.backgroundColor='#22c55e'">
+                    <span style="color: #ffffff !important;">➕</span>
+                    <span style="color: #ffffff !important;">Ajouter une ressource</span>
                 </button>
             @endif
         </div>
@@ -153,6 +157,23 @@
                                     </div>
                                 @endif
 
+                                <!-- Reserve Button for Users and Responsable (when resource is available) - NOT for Admin -->
+                                @if($resource->etat === 'disponible' && Auth::user()->role !== 'admin')
+                                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+                                        <button 
+                                            type="button"
+                                            onclick="openReservationModal({{ $resource->id }}, '{{ addslashes($resource->nom ?? '') }}')"
+                                            class="w-full inline-flex items-center justify-center px-4 py-2.5 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200" 
+                                            style="background: linear-gradient(to right, #60a5fa, #3b82f6) !important; background-color: #3b82f6 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important; color: #ffffff !important; border: none !important;"
+                                            onmouseover="this.style.background='linear-gradient(to right, #3b82f6, #2563eb)'; this.style.backgroundColor='#2563eb';"
+                                            onmouseout="this.style.background='linear-gradient(to right, #60a5fa, #3b82f6)'; this.style.backgroundColor='#3b82f6';">
+                                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: #ffffff !important;">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                            <span style="color: #ffffff !important;">Réserver cette ressource</span>
+                                        </button>
+                                    </div>
+                                @endif
                                 
                             </div>
                         </div>
@@ -177,114 +198,121 @@
     @endphp
 
     <!-- Modal: Ajouter Ressource -->
-    <div id="addResourceModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-full max-w-2xl shadow-lg rounded-md bg-white dark:bg-gray-800">
-            <div class="mt-3">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        ➕ Ajouter une nouvelle ressource
-                    </h3>
-                    <button onclick="closeAddResourceModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+    <div id="addResourceModal" class="fixed inset-0 bg-black bg-opacity-50 hidden overflow-y-auto h-full w-full z-50 backdrop-blur-sm">
+        <div class="relative top-10 mx-auto p-0 border-0 w-full max-w-2xl shadow-2xl rounded-2xl bg-white dark:bg-gray-800 mb-10">
+            <div class="sticky top-0 bg-gradient-to-r from-green-500 via-green-600 to-emerald-600 px-6 py-4 rounded-t-2xl flex justify-between items-center shadow-lg" style="background: linear-gradient(to right, #22c55e, #16a34a, #10b981) !important;">
+                <h3 class="text-xl font-bold text-white flex items-center" style="text-shadow: 0 2px 4px rgba(0,0,0,0.3) !important; color: #ffffff !important;">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Ajouter une nouvelle ressource
+                </h3>
+                <button onclick="closeAddResourceModal()" class="text-white hover:text-gray-100 transition-colors" style="text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important; color: #ffffff !important;">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form action="{{ route('resources.store') }}" method="POST" class="p-6">
+                @csrf
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Nom <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="nom" required
+                               class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                               placeholder="Ex: Serveur Web 01">
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Description
+                        </label>
+                        <textarea name="description" rows="3"
+                                  class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all resize-none"
+                                  placeholder="Description détaillée de la ressource..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Catégorie <span class="text-red-500">*</span>
+                        </label>
+                        <select name="categorie_id" required
+                                class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                            <option value="">Sélectionner...</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Responsable <span class="text-red-500">*</span>
+                        </label>
+                        <select name="responsable_id" required
+                                class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                            @if(Auth::user()->role === 'admin')
+                                <option value="">Sélectionner...</option>
+                                @foreach($responsables as $resp)
+                                    <option value="{{ $resp->id }}">{{ $resp->name }}</option>
+                                @endforeach
+                            @else
+                                <option value="{{ Auth::id() }}" selected>{{ Auth::user()->name }}</option>
+                            @endif
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            CPU (cores)
+                        </label>
+                        <input type="number" name="cpu" min="1"
+                               class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                               placeholder="Ex: 8">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            RAM (GB)
+                        </label>
+                        <input type="number" name="ram" min="1"
+                               class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                               placeholder="Ex: 32">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Capacité (GB)
+                        </label>
+                        <input type="number" name="capacite" min="1"
+                               class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                               placeholder="Ex: 500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                            Système d'exploitation
+                        </label>
+                        <input type="text" name="os"
+                               class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                               placeholder="Ex: Ubuntu Server 22.04">
+                    </div>
                 </div>
 
-                <form action="{{ route('resources.store') }}" method="POST">
-                    @csrf
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Nom <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="nom" required
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100">
-                        </div>
-
-                        <div class="col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Description
-                            </label>
-                            <textarea name="description" rows="2"
-                                      class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100"></textarea>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Catégorie <span class="text-red-500">*</span>
-                            </label>
-                            <select name="categorie_id" required
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100">
-                                <option value="">Sélectionner...</option>
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Responsable <span class="text-red-500">*</span>
-                            </label>
-                            <select name="responsable_id" required
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100">
-                                @if(Auth::user()->role === 'admin')
-                                    <option value="">Sélectionner...</option>
-                                    @foreach($responsables as $resp)
-                                        <option value="{{ $resp->id }}">{{ $resp->name }}</option>
-                                    @endforeach
-                                @else
-                                    <option value="{{ Auth::id() }}" selected>{{ Auth::user()->name }}</option>
-                                @endif
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                CPU (cores)
-                            </label>
-                            <input type="number" name="cpu" min="1"
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                RAM (GB)
-                            </label>
-                            <input type="number" name="ram" min="1"
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Capacité (GB)
-                            </label>
-                            <input type="number" name="capacite" min="1"
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Système d'exploitation
-                            </label>
-                            <input type="text" name="os"
-                                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100">
-                        </div>
-                    </div>
-
-                    <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="closeAddResourceModal()"
-                                class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded transition">
-                            Annuler
-                        </button>
-                        <button type="submit"
-                                class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded transition">
-                            ➕ Ajouter
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <button type="button" onclick="closeAddResourceModal()"
+                            class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-lg transition-all duration-200">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-6 py-2.5 bg-gradient-to-r from-green-500 via-green-600 to-emerald-600 hover:from-green-600 hover:via-green-700 hover:to-emerald-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200" style="text-shadow: 0 1px 2px rgba(0,0,0,0.3); background: linear-gradient(to right, #22c55e, #16a34a, #10b981) !important;">
+                        Ajouter
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -494,52 +522,56 @@
     </div>
 
     <!-- Reservation Modal -->
-    <div id="reservationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
-            <div class="mt-3">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        📅 Réserver: <span id="modalResourceName"></span>
-                    </h3>
-                    <button onclick="closeReservationModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+    <div id="reservationModal" class="fixed inset-0 bg-black bg-opacity-50 hidden overflow-y-auto h-full w-full z-50 backdrop-blur-sm">
+        <div class="relative top-10 mx-auto p-0 border-0 w-full max-w-md shadow-2xl rounded-2xl bg-white dark:bg-gray-800 mb-10">
+            <div class="sticky top-0 bg-gradient-to-r from-blue-800 via-blue-900 to-indigo-900 px-6 py-4 rounded-t-2xl flex justify-between items-center shadow-lg" style="background: linear-gradient(to right, #1e3a8a, #1e40af, #3730a3) !important;">
+                <h3 class="text-xl font-bold text-white flex items-center" style="text-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 0 2px rgba(0,0,0,0.5) !important; color: #ffffff !important;">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Réserver: <span id="modalResourceName" class="ml-2"></span>
+                </h3>
+                <button onclick="closeReservationModal()" class="text-white hover:text-gray-100 transition-colors" style="text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important; color: #ffffff !important;">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <form id="reservationForm" method="POST" action="" class="p-6">
+                @csrf
+                <div class="mb-6">
+                    <label for="date_debut" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Date de début <span class="text-red-500">*</span>
+                    </label>
+                    <input type="datetime-local" id="date_debut" name="date_debut" required
+                           min="{{ date('Y-m-d\TH:i') }}"
+                           class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                 </div>
 
-                <form id="reservationForm" method="POST" action="">
-                    @csrf
-                    <div class="mb-4">
-                        <label for="date_debut" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Date de début
-                        </label>
-                        <input type="datetime-local" id="date_debut" name="date_debut" required
-                               min="{{ date('Y-m-d\TH:i') }}"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100">
-                    </div>
+                <div class="mb-6">
+                    <label for="date_fin" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        Date de fin <span class="text-red-500">*</span>
+                    </label>
+                    <input type="datetime-local" id="date_fin" name="date_fin" required
+                           min="{{ date('Y-m-d\TH:i') }}"
+                           class="w-full px-4 py-2.5 border-2 border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-700 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                </div>
 
-                    <div class="mb-4">
-                        <label for="date_fin" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Date de fin
-                        </label>
-                        <input type="datetime-local" id="date_fin" name="date_fin" required
-                               min="{{ date('Y-m-d\TH:i') }}"
-                               class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 dark:text-gray-100">
-                    </div>
-
-                    <div class="flex justify-end space-x-3">
-                        <button type="button" onclick="closeReservationModal()"
-                                class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium rounded transition">
-                            Annuler
-                        </button>
-                        <button type="submit"
-                                class="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-medium rounded transition">
-                            Confirmer
-                        </button>
-                    </div>
-                </form>
-            </div>
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <button type="button" onclick="closeReservationModal()"
+                            class="px-6 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-lg transition-all duration-200">
+                        Annuler
+                    </button>
+                    <button type="submit"
+                            class="px-6 py-2.5 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200" 
+                            style="background: linear-gradient(to right, #60a5fa, #3b82f6) !important; background-color: #3b82f6 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important; color: #ffffff !important; border: none !important;"
+                            onmouseover="this.style.background='linear-gradient(to right, #3b82f6, #2563eb)'; this.style.backgroundColor='#2563eb';"
+                            onmouseout="this.style.background='linear-gradient(to right, #60a5fa, #3b82f6)'; this.style.backgroundColor='#3b82f6';">
+                        Confirmer la réservation
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -562,11 +594,34 @@
     <script>
         // Add Resource Modal
         function openAddResourceModal() {
-            document.getElementById('addResourceModal').classList.remove('hidden');
+            const modal = document.getElementById('addResourceModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
         }
+        
         function closeAddResourceModal() {
-            document.getElementById('addResourceModal').classList.add('hidden');
+            const modal = document.getElementById('addResourceModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
         }
+        
+        // Close modal when clicking outside
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('addResourceModal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeAddResourceModal();
+                    }
+                });
+            }
+        });
 
         // Edit Resource Modal
         function openEditModal(id, nom, description, cpu, ram, capacite, os, categorie_id, responsable_id) {
@@ -632,95 +687,72 @@
 
         // Reservation Modal
         function openReservationModal(resourceId, resourceName) {
-            document.getElementById('modalResourceName').textContent = resourceName;
-            document.getElementById('reservationForm').action = '{{ route("reservations.quick", ":id") }}'.replace(':id', resourceId);
-            document.getElementById('reservationModal').classList.remove('hidden');
+            const modal = document.getElementById('reservationModal');
+            const form = document.getElementById('reservationForm');
+            const nameElement = document.getElementById('modalResourceName');
+            
+            if (!modal || !form || !nameElement) {
+                console.error('Reservation modal elements not found');
+                return;
+            }
+            
+            nameElement.textContent = resourceName || 'Ressource';
+            form.action = '{{ route("reservations.quick", ":id") }}'.replace(':id', resourceId);
+            modal.classList.remove('hidden');
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
             
             const startDateInput = document.getElementById('date_debut');
             const endDateInput = document.getElementById('date_fin');
             
-            startDateInput.addEventListener('change', function() {
-                endDateInput.min = this.value;
-                if (endDateInput.value && endDateInput.value < this.value) {
-                    endDateInput.value = '';
-                }
-            });
+            if (startDateInput && endDateInput) {
+                // Remove existing listeners to avoid duplicates
+                const newStartInput = startDateInput.cloneNode(true);
+                startDateInput.parentNode.replaceChild(newStartInput, startDateInput);
+                
+                document.getElementById('date_debut').addEventListener('change', function() {
+                    const endInput = document.getElementById('date_fin');
+                    if (endInput && this.value) {
+                        endInput.min = this.value;
+                        if (endInput.value && endInput.value < this.value) {
+                            endInput.value = '';
+                        }
+                    }
+                });
+            }
         }
+        
         function closeReservationModal() {
-            document.getElementById('reservationModal').classList.add('hidden');
-            document.getElementById('reservationForm').reset();
+            const modal = document.getElementById('reservationModal');
+            const form = document.getElementById('reservationForm');
+            
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+            
+            if (form) {
+                form.reset();
+            }
         }
 
         // Close modals on outside click
-        ['addResourceModal', 'editResourceModal', 'maintenanceModal', 'disableModal', 'reservationModal'].forEach(modalId => {
-            document.getElementById(modalId).addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
+        document.addEventListener('DOMContentLoaded', function() {
+            ['addResourceModal', 'editResourceModal', 'maintenanceModal', 'disableModal', 'reservationModal'].forEach(modalId => {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            this.classList.add('hidden');
+                            this.style.display = 'none';
+                            document.body.style.overflow = '';
+                        }
+                    });
                 }
             });
         });
-
-
-        <div class="mt-10 bg-gray-900 p-6 rounded-lg">
-    <h3 class="text-xl font-bold mb-4 text-white">🗨️ Discussions & Incidents</h3>
-
-    @foreach($resource->comments as $comment)
-        <div class="mb-4 p-3 bg-gray-800 rounded-lg border-l-4 border-blue-500">
-            <div class="flex justify-between items-center">
-                <strong class="text-blue-400">{{ $comment->user->name }}</strong>
-                <small class="text-gray-500">{{ $comment->created_at->diffForHumans() }}</small>
-            </div>
-            <p class="text-gray-300 mt-1">{{ $comment->content }}</p>
-
-            @if(auth()->user()->role == 'admin' || auth()->id() == $resource->responsable_id)
-                <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" class="mt-2">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="text-red-500 text-xs hover:underline">🗑️ Supprimer (Modérer)</button>
-                </form>
-            @endif
-        </div>
-    @endforeach
-
-    <form action="{{ route('comments.store', $resource->id) }}" method="POST" class="mt-6">
-        @csrf
-        <textarea name="content" rows="3" class="w-full p-3 bg-gray-700 text-white rounded-lg border-none" placeholder="Signaler un problème ou poser une question..."></textarea>
-        <button type="submit" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">Envoyer le message</button>
-    </form>
-  </div>
-
-
-  <style>
-    .comments-section { background: #1f2937; padding: 20px; border-radius: 10px; margin-top: 30px; color: white; }
-    .comment-card { border-bottom: 1px solid #374151; padding: 10px 0; }
-    .comment-card button { background: none; border: none; color: #ef4444; cursor: pointer; text-decoration: underline; }
-    .comments-section textarea { width: 100%; background: #374151; color: white; border: none; padding: 10px; border-radius: 5px; margin: 10px 0; }
-</style>
-
-<div class="comments-section">
-    <h3>🗨️ Discussions & Incidents</h3>
-    
-    @foreach($resource->comments as $comment)
-        <div class="comment-card">
-            <strong>{{ $comment->user->name }}</strong> : <span>{{ $comment->content }}</span>
-            <br>
-            <small style="color: #9ca3af;">{{ $comment->created_at->diffForHumans() }}</small>
-            
-            @if(auth()->user()->role == 'admin' || auth()->id() == $resource->responsable_id)
-                <form action="{{ route('comments.destroy', $comment->id) }}" method="POST" style="display:inline;">
-                    @csrf @method('DELETE')
-                    <button type="submit">🗑️ Modérer</button>
-                </form>
-            @endif
-        </div>
-    @endforeach
-
-    <form action="{{ route('comments.store', $resource->id) }}" method="POST">
-        @csrf
-        <textarea name="content" rows="2" placeholder="Signaler un incident..."></textarea>
-        <button type="submit" style="background: #3b82f6; color: white; padding: 5px 15px; border-radius: 5px; border: none;">Envoyer</button>
-    </form>
-</div>
     </script>
     </x-slot>
 </x-app-layout>
+

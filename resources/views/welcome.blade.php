@@ -37,14 +37,14 @@
     </style>
 </head>
 
-<body class="font-sans antialiased bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+<body class="font-sans antialiased min-h-screen py-12 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(to bottom right, #e0f2fe, #bfdbfe, #93c5fd);">
 
 <div class="max-w-6xl mx-auto">
 
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 mb-8">
         <div class="text-center">
-            <div class="mx-auto h-20 w-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg mb-4">
+            <div class="mx-auto h-20 w-20 rounded-full flex items-center justify-center shadow-lg mb-4" style="background: linear-gradient(to bottom right, #60a5fa, #3b82f6);">
                 <svg class="h-12 w-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
@@ -115,10 +115,11 @@
                         <button
                             onclick="toggleDetails(this)"
                             class="mt-4 w-full px-4 py-2 rounded-lg
-                                   bg-gradient-to-r from-purple-600 to-pink-600
-                                   text-white font-semibold
-                                   hover:from-purple-700 hover:to-pink-700
-                                   transition-all duration-200"
+                          text-white font-semibold
+                          transition-all duration-200"
+                          style="background: linear-gradient(to right, #60a5fa, #3b82f6);"
+                          onmouseover="this.style.background='linear-gradient(to right, #3b82f6, #2563eb)'"
+                          onmouseout="this.style.background='linear-gradient(to right, #60a5fa, #3b82f6)'"
                         >
                             Voir détails
                         </button>
@@ -176,7 +177,7 @@
             <div class="text-center space-y-4">
                 <p class="text-gray-700 dark:text-gray-300 text-lg">
                     Bienvenue,
-                    <strong class="text-purple-600 dark:text-purple-400">
+                    <strong style="color: #3b82f6;">
                         {{ Auth::user()->name }}
                     </strong>
                 </p>
@@ -184,8 +185,10 @@
                 <a href="{{ route('dashboard.' . Auth::user()->role) }}"
                    class="inline-flex items-center justify-center w-full px-6 py-3
                           rounded-lg text-white font-medium
-                          bg-gradient-to-r from-purple-600 to-pink-600
-                          hover:scale-105 transition shadow-lg">
+                          hover:scale-105 transition shadow-lg"
+                          style="background: linear-gradient(to right, #60a5fa, #3b82f6);"
+                          onmouseover="this.style.background='linear-gradient(to right, #3b82f6, #2563eb)'"
+                          onmouseout="this.style.background='linear-gradient(to right, #60a5fa, #3b82f6)'">
                    Accéder au Dashboard
                 </a>
             </div>
@@ -194,16 +197,19 @@
                 <a href="{{ route('login') }}"
                    class="inline-flex items-center justify-center w-full px-6 py-3
                           rounded-lg text-white font-medium
-                          bg-gradient-to-r from-purple-600 to-pink-600
-                          hover:scale-105 transition shadow-lg">
+                          hover:scale-105 transition shadow-lg"
+                          style="background: linear-gradient(to right, #60a5fa, #3b82f6);"
+                          onmouseover="this.style.background='linear-gradient(to right, #3b82f6, #2563eb)'"
+                          onmouseout="this.style.background='linear-gradient(to right, #60a5fa, #3b82f6)'">
                 🔑 Se connecter
                 </a>
 
                 <a href="{{ route('register') }}"
                    class="inline-flex items-center justify-center w-full px-6 py-3
-                          rounded-lg border-2 border-purple-600
-                          text-purple-600 font-medium
-                          hover:bg-purple-50 transition">
+                          rounded-lg border-2 font-medium transition"
+                          style="border-color: #3b82f6; color: #3b82f6;"
+                          onmouseover="this.style.backgroundColor='#eff6ff'; this.style.borderColor='#2563eb'; this.style.color='#2563eb'"
+                          onmouseout="this.style.backgroundColor='transparent'; this.style.borderColor='#3b82f6'; this.style.color='#3b82f6'">
                 Demande d'ouverture de compte
                 </a>
             </div>

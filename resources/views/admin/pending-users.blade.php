@@ -44,7 +44,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         Message
                     </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider min-w-[200px]">
                         Actions
                     </th>
                 </tr>
@@ -74,31 +74,25 @@
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                             {{ $user->request_message ?? 'Aucun message' }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <div class="flex space-x-2">
+                        <td class="px-6 py-4 text-sm font-medium">
+                            <div class="flex items-center gap-3">
                                 <!-- Bouton Approuver -->
-                                <form action="{{ route('admin.users.approve', $user) }}" method="POST" class="inline">
+                                <form action="{{ route('admin.users.approve', $user) }}" method="POST" class="inline-block">
                                     @csrf
                                     <button type="submit" 
                                             onclick="return confirm('Êtes-vous sûr de vouloir approuver cet utilisateur ?')"
-                                            class="inline-flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white text-sm font-medium rounded-md transition-colors">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        Approuver
+                                            class="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-md shadow-sm hover:shadow-md transition-all whitespace-nowrap min-w-[100px]">
+                                        ✓ Approuver
                                     </button>
                                 </form>
                                 
                                 <!-- Bouton Rejeter -->
-                                <form action="{{ route('admin.users.reject', $user) }}" method="POST" class="inline">
+                                <form action="{{ route('admin.users.reject', $user) }}" method="POST" class="inline-block">
                                     @csrf
                                     <button type="submit" 
                                             onclick="return confirm('Êtes-vous sûr de vouloir rejeter cet utilisateur ?')"
-                                            class="inline-flex items-center px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-md transition-colors">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        Rejeter
+                                            class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-md shadow-sm hover:shadow-md transition-all whitespace-nowrap min-w-[100px]">
+                                        ✗ Rejeter
                                     </button>
                                 </form>
                             </div>
