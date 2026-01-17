@@ -18,7 +18,8 @@ class ReservationController extends Controller
             ->where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->get();
-        return view('reservation.index', compact('reservations'));
+        $resources = Resource::where('etat', 'disponible')->get();
+        return view('reservation.index', compact('reservations', 'resources'));
     }
 
     // Admin/Responsable view of all reservations

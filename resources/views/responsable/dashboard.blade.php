@@ -125,11 +125,11 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                @if($reservation->status === 'en_attente')
+                                @if($reservation->statut === 'en_attente')
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">
                                         En attente
                                     </span>
-                                @elseif($reservation->status === 'approuve')
+                                @elseif($reservation->statut === 'approuve')
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                                         Approuvée
                                     </span>
@@ -140,7 +140,7 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                @if($reservation->status === 'en_attente')
+                                @if($reservation->statut === 'en_attente')
                                 <div class="flex space-x-2">
                                     <form action="{{ route('reservations.approve', $reservation->id) }}" method="POST" class="inline">
                                         @csrf
@@ -151,13 +151,13 @@
                                         </button>
                                     </form>
                                     <form action="{{ route('reservations.reject', $reservation->id) }}" method="POST" class="inline">
-                                        @csrf
+                    @csrf
                                         <button type="submit" 
                                                 class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 font-medium"
                                                 onclick="return confirm('Refuser cette réservation?')">
                                             ✗ Refuser
                                         </button>
-                                    </form>
+                </form>
                                 </div>
                                 @else
                                     <span class="text-gray-400 dark:text-gray-500">-</span>
@@ -240,7 +240,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                     </svg>
                 </div>
-            </div>
+        </div>
         </a>
     </div>
 

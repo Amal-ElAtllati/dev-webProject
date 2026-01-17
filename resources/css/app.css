@@ -2,3 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fallback: ensure nav menu (links, notifications, user dropdown) shows on desktop */
+@media (min-width: 640px) {
+  .sm\:flex {
+    display: flex !important;
+  }
+}
+
